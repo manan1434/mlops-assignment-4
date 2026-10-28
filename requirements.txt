@@ -1,0 +1,11 @@
+dvc
+scikit-learn
+numpy
+matplotlib
+pillow
+requests
+pyyaml
+requests
+pytest
+urllib3<2
+dvc[s3]

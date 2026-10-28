@@ -1,0 +1,161 @@
+schema: '2.0'
+stages:
+  data_collection:
+    cmd: python3 src/data_collection.py
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: a1728b69c921954c32b3d99aac3b2361
+      size: 695
+    - path: src/data_collection.py
+      hash: md5
+      md5: 3f2086e70bb281b4302a380de0dce58b
+      size: 1490
+    params:
+      params.yaml:
+        data.classes:
+        - daisy
+        - dandelion
+        - roses
+        data.dataset_url: 
+          https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
+        data.max_images_per_class: 100
+        data.raw_dir: data/raw
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 3d7a289d0b3b53fe1bbf03ced58f29c8.dir
+      size: 478314933
+      nfiles: 3972
+  data_processing:
+    cmd: python3 src/data_processing.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 3d7a289d0b3b53fe1bbf03ced58f29c8.dir
+      size: 478314933
+      nfiles: 3972
+    - path: params.yaml
+      hash: md5
+      md5: a1728b69c921954c32b3d99aac3b2361
+      size: 695
+    - path: src/data_processing.py
+      hash: md5
+      md5: f2edc0bfa36bfe13b55c681e7eddffc8
+      size: 1687
+    params:
+      params.yaml:
+        processing.image_size: 64
+        processing.validation_split: 0.2
+    outs:
+    - path: data/processed/X_train.npy
+      hash: md5
+      md5: 0140b4f3d99b3eeaf6e9a49e98d9caf8
+      size: 2949248
+    - path: data/processed/X_val.npy
+      hash: md5
+      md5: 7487987aa04682c7ad44536ab6c6c10f
+      size: 737408
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: c0d3283c0db5f0d97bc32762bd0e3fbe
+      size: 2048
+    - path: data/processed/y_val.npy
+      hash: md5
+      md5: 0f93939b914508732af3644d1da0d32b
+      size: 608
+  feature_selection:
+    cmd: python3 src/feature_selection.py
+    deps:
+    - path: data/processed/X_train.npy
+      hash: md5
+      md5: 0140b4f3d99b3eeaf6e9a49e98d9caf8
+      size: 2949248
+    - path: data/processed/X_val.npy
+      hash: md5
+      md5: 7487987aa04682c7ad44536ab6c6c10f
+      size: 737408
+    - path: params.yaml
+      hash: md5
+      md5: a1728b69c921954c32b3d99aac3b2361
+      size: 695
+    - path: src/feature_selection.py
+      hash: md5
+      md5: e7358832da066d6feeeac77d64b3714a
+      size: 1260
+    params:
+      params.yaml:
+        features.flatten: true
+        features.normalize: true
+    outs:
+    - path: data/processed/X_train_feat.npy
+      hash: md5
+      md5: 3e6e612c3cf117e021e3f2a4744e1df1
+      size: 23593088
+    - path: data/processed/X_val_feat.npy
+      hash: md5
+      md5: 905b5619bf8854ecd841863d5606d337
+      size: 5898368
+    - path: data/processed/y_train_feat.npy
+      hash: md5
+      md5: c0d3283c0db5f0d97bc32762bd0e3fbe
+      size: 2048
+    - path: data/processed/y_val_feat.npy
+      hash: md5
+      md5: 0f93939b914508732af3644d1da0d32b
+      size: 608
+  model_training:
+    cmd: python3 src/model_training.py
+    deps:
+    - path: data/processed/X_train_feat.npy
+      hash: md5
+      md5: 3e6e612c3cf117e021e3f2a4744e1df1
+      size: 23593088
+    - path: params.yaml
+      hash: md5
+      md5: a1728b69c921954c32b3d99aac3b2361
+      size: 695
+    - path: src/model_training.py
+      hash: md5
+      md5: fadc8de2785fe888745893512b7fca7d
+      size: 1235
+    params:
+      params.yaml:
+        training.max_depth: 8
+        training.min_samples_leaf: 1
+        training.min_samples_split: 3
+        training.n_estimators: 125
+        training.random_state: 42
+    outs:
+    - path: data/model/model.pkl
+      hash: md5
+      md5: 069ba0373b93ac9779090126f45523a8
+      size: 644340
+  model_evaluation:
+    cmd: python3 src/model_evaluation.py
+    deps:
+    - path: data/model/model.pkl
+      hash: md5
+      md5: 069ba0373b93ac9779090126f45523a8
+      size: 644340
+    - path: data/processed/X_val_feat.npy
+      hash: md5
+      md5: 905b5619bf8854ecd841863d5606d337
+      size: 5898368
+    - path: params.yaml
+      hash: md5
+      md5: a1728b69c921954c32b3d99aac3b2361
+      size: 695
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: e056dfcdde1ab9cb168979dada7b8e85
+      size: 1650
+    outs:
+    - path: data/metrics.json
+      hash: md5
+      md5: cc447a6d64103643ebeb25e433700c7a
+      size: 17
+    - path: data/plots/confusion_matrix.png
+      hash: md5
+      md5: 313e4de6915a2fc2118dcbbdbe751489
+      size: 15587
